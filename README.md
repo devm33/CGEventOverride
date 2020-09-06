@@ -1,3 +1,3 @@
-# MyLibrary
+# CGEventOverride
 
-A description of this package.
+Some CGEvent related code used by [Abnormal Mouse](https://github.com/intitni/AbnormalMouseApp).
