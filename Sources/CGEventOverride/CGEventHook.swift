@@ -132,27 +132,28 @@ public final class CGEventHook: CGEventHookType {
         ) -> Unmanaged<CGEvent>? {
             guard AXIsProcessTrusted() else {
                 postIsDisabled()
-                return nil
+                return .passRetained(event)
             }
 
             if eventType == .tapDisabledByTimeout || eventType == .tapDisabledByUserInput {
                 postIsDisabled()
-                return nil
+                return .passRetained(event)
             }
 
             let allManipulations = allManipulationsRawPointer?
                 .assumingMemoryBound(to: [AnyHashable: CGEventManipulation].self)
                 .pointee ?? [:]
 
-            var results: [CGEventManipulation.Result] = []
+            guard !allManipulations.isEmpty else { return nil }
+
+            var result = CGEventManipulation.Result.unchange
             for (_, man) in allManipulations
                 where man.eventsOfInterest.contains(eventType)
                 || man.eventsOfInterest.contains(.all) {
-                let result = man.convert(tapProxy, eventType, event)
-                results.append(result)
+                let next = man.convert(tapProxy, eventType, event)
+                result = result.combined(with: next)
             }
-            let result: CGEventManipulation.Result = results
-                .reduce(.unchange) { $0.combined(with: $1) }
+
             switch result {
             case .discarded: return nil
             case .unchange: return .passUnretained(event)
