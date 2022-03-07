@@ -64,14 +64,28 @@ public final class CGEventHook: CGEventHookType {
     private var recoveryTimer: Timer?
     private var cancellables = [AnyCancellable]()
     public var isEnabled: Bool { port != nil }
+    let logger: (String) -> Void
+    let tapLocation: CGEventTapLocation
+    let tapPlacement: CGEventTapPlacement
+    let tapOptions: CGEventTapOptions
 
     deinit {
         recoveryTimer?.invalidate()
     }
 
     /// Create a CGEventHook that listens into given event types.
-    public init(eventsOfInterest: Set<CGEventType>) {
+    public init(
+        eventsOfInterest: Set<CGEventType>,
+        tapLocation: CGEventTapLocation = .cghidEventTap,
+        tapPlacement: CGEventTapPlacement = .headInsertEventTap,
+        tapOptions: CGEventTapOptions = .defaultTap,
+        logger: @escaping (String) -> Void = { _ in }
+    ) {
         self.eventsOfInterest = eventsOfInterest
+        self.logger = logger
+        self.tapLocation = tapLocation
+        self.tapPlacement = tapPlacement
+        self.tapOptions = tapOptions
 
         NotificationCenter.default.publisher(for: hookIsDisabledNotification)
             .receive(on: DispatchQueue.main)
@@ -150,7 +164,8 @@ public final class CGEventHook: CGEventHookType {
             var result = CGEventManipulation.Result.unchange
             for (_, man) in allManipulations
                 where man.eventsOfInterest.contains(eventType)
-                || man.eventsOfInterest.contains(.all) {
+                || man.eventsOfInterest.contains(.all)
+            {
                 let next = man.convert(tapProxy, eventType, event)
                 result = result.combined(with: next)
             }
@@ -161,12 +176,16 @@ public final class CGEventHook: CGEventHookType {
             case let .replaced(newEvent): return .passUnretained(newEvent)
             }
         }
+        
+        let tapLocation = self.tapLocation
+        let tapPlacement = self.tapPlacement
+        let tapOptions = self.tapOptions
 
         guard let port = withUnsafeMutablePointer(to: &allManipulations, { pointer in
             CGEvent.tapCreate(
-                tap: .cghidEventTap,
-                place: .headInsertEventTap,
-                options: .defaultTap,
+                tap: tapLocation,
+                place: tapPlacement,
+                options: tapOptions,
                 eventsOfInterest: eoi,
                 callback: callback,
                 userInfo: pointer
