@@ -98,7 +98,7 @@ public final class CGEventHook: CGEventHookType {
 
     public func deactivate() {
         guard let port = port else { return }
-        print("Deactivate")
+        logger("CGEventHook deactivate.")
         CFMachPortInvalidate(port)
         self.port = nil
 
@@ -108,7 +108,7 @@ public final class CGEventHook: CGEventHookType {
 
     func releasePort() {
         guard let port = port else { return }
-        print("Release port")
+        logger("CGEventHook release port")
         CFMachPortInvalidate(port)
         self.port = nil
 
@@ -117,10 +117,10 @@ public final class CGEventHook: CGEventHookType {
 
     func setupTimerToRetry() {
         recoveryTimer?.invalidate()
-        recoveryTimer = Timer(timeInterval: 5, repeats: true) { timer in
-            print("Try to restart port")
+        recoveryTimer = Timer(timeInterval: 5, repeats: true) { [logger] timer in
+            logger("CGEventHook trying to restart port")
             if self.activateIfPossible() {
-                print("Port restarts")
+                logger("CGEventHook port restarts")
                 timer.invalidate()
             }
         }
@@ -196,7 +196,7 @@ public final class CGEventHook: CGEventHookType {
             setupTimerToRetry()
             return false
         }
-        print("Activated")
+        logger("CGEventHook activated.")
         self.port = port
         let runLoopSource = CFMachPortCreateRunLoopSource(kCFAllocatorDefault, port, 0)
         CFRunLoopAddSource(CFRunLoopGetCurrent(), runLoopSource, .commonModes)
