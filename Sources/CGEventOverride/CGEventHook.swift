@@ -18,11 +18,11 @@ public struct CGEventManipulation {
     public enum Result {
         case replaced(by: CGEvent)
         case discarded
-        case unchange
+        case unchanged
 
         public func combined(with result: Result) -> Result {
             switch (self, result) {
-            case let (.unchange, x): return x
+            case let (.unchanged, x): return x
             case (.discarded, _): return self
             case (.replaced, _): return self
             }
@@ -62,7 +62,7 @@ public final class CGEventHook: CGEventHookType {
     var allManipulations = [AnyHashable: CGEventManipulation]()
     var eventsOfInterest: Set<CGEventType>
     private var recoveryTimer: Timer?
-    private var cancellables = [AnyCancellable]()
+    private var cancellable = [AnyCancellable]()
     public var isEnabled: Bool { port != nil }
     let logger: (String) -> Void
     let tapLocation: CGEventTapLocation
@@ -91,7 +91,7 @@ public final class CGEventHook: CGEventHookType {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
                 self?.releasePort()
-            }.store(in: &cancellables)
+            }.store(in: &cancellable)
     }
 
     public func deactivate() {
@@ -161,7 +161,7 @@ public final class CGEventHook: CGEventHookType {
 
             guard !allManipulations.isEmpty else { return nil }
 
-            var result = CGEventManipulation.Result.unchange
+            var result = CGEventManipulation.Result.unchanged
             for (_, man) in allManipulations
                 where man.eventsOfInterest.contains(eventType)
                 || man.eventsOfInterest.contains(.all)
@@ -172,7 +172,7 @@ public final class CGEventHook: CGEventHookType {
 
             switch result {
             case .discarded: return nil
-            case .unchange: return .passUnretained(event)
+            case .unchanged: return .passUnretained(event)
             case let .replaced(newEvent): return .passUnretained(newEvent)
             }
         }
