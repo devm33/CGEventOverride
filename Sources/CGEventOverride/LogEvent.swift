@@ -1,4 +1,5 @@
 import Foundation
+import Cocoa
 
 public func logCGEvent(_ event: CGEvent) {
     print("===========")
