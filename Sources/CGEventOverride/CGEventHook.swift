@@ -7,6 +7,8 @@ public protocol CGEventHookType {
     /// Start the hook if possible.
     @discardableResult
     func activateIfPossible() -> Bool
+    /// Deactivate the hook.
+    func deactivate()
     /// Add a manipulation for events. Identified by a key.
     func add(_ manipulation: CGEventManipulation, forKey key: AnyHashable)
     /// Remove a manipulation from the hook.
