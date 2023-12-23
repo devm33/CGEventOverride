@@ -1,5 +1,6 @@
 import Cocoa
 import Combine
+import CoreGraphics
 import Foundation
 
 /// A hook of CGEvents.
@@ -178,7 +179,7 @@ public final class CGEventHook: CGEventHookType {
             case let .replaced(newEvent): return .passUnretained(newEvent)
             }
         }
-        
+
         let tapLocation = self.tapLocation
         let tapPlacement = self.tapPlacement
         let tapOptions = self.tapOptions
@@ -211,3 +212,4 @@ public final class CGEventHook: CGEventHookType {
         allManipulations[key] = nil
     }
 }
+

@@ -1,5 +1,6 @@
-import Foundation
 import Cocoa
+import CoreGraphics
+import Foundation
 
 public func logCGEvent(_ event: CGEvent) {
     print("===========")
@@ -14,8 +15,8 @@ public func logCGEvent(_ event: CGEvent) {
     print("===========\n")
 }
 
-extension CGEventType {
-    public var name: String {
+public extension CGEventType {
+    var name: String {
         switch self {
         case .null: return "null"
         case .leftMouseDown: return "leftMouseDown"
@@ -43,8 +44,8 @@ extension CGEventType {
     }
 }
 
-extension RotateDirection {
-    public var name: String {
+public extension RotateDirection {
+    var name: String {
         switch self {
         case .none: return "none"
         case .clockwise: return "clockwise"
@@ -53,8 +54,8 @@ extension RotateDirection {
     }
 }
 
-extension ZoomDirection {
-    public var name: String {
+public extension ZoomDirection {
+    var name: String {
         switch self {
         case .none: return "none"
         case .expand: return "expand"
@@ -63,8 +64,8 @@ extension ZoomDirection {
     }
 }
 
-extension SwipeDirection {
-    public var name: String {
+public extension SwipeDirection {
+    var name: String {
         switch self {
         case .none: return "none"
         case .up: return "up"
@@ -75,8 +76,8 @@ extension SwipeDirection {
     }
 }
 
-extension CGEventField {
-    public var name: String {
+public extension CGEventField {
+    var name: String {
         switch rawValue {
         case CGEventField.mouseEventNumber.rawValue:
             return "mouseEventNumber"
@@ -230,8 +231,8 @@ extension CGEventField {
     }
 }
 
-extension GestureMotion {
-    public var name: String {
+public extension GestureMotion {
+    var name: String {
         switch self {
         case .none: return "none"
         case .horizontal: return "horizontal"
@@ -252,8 +253,8 @@ extension GestureMotion {
     }
 }
 
-extension GestureType {
-    public var name: String {
+public extension GestureType {
+    var name: String {
         switch self {
         case .null: return "null"
         case .vendorDefined: return "vendorDefined"
@@ -291,8 +292,8 @@ extension GestureType {
     }
 }
 
-extension CGScrollPhase {
-    public var name: String {
+public extension CGScrollPhase {
+    var name: String {
         switch self {
         case .began: return "began"
         case .cancelled: return "cancelled"
@@ -304,8 +305,8 @@ extension CGScrollPhase {
     }
 }
 
-extension CGMomentumScrollPhase {
-    public var name: String {
+public extension CGMomentumScrollPhase {
+    var name: String {
         switch self {
         case .none: return "none"
         case .begin: return "begin"
@@ -316,8 +317,8 @@ extension CGMomentumScrollPhase {
     }
 }
 
-extension CGGesturePhase {
-    public var name: String {
+public extension CGGesturePhase {
+    var name: String {
         switch self {
         case .none: return "none"
         case .began: return "began"
@@ -329,3 +330,4 @@ extension CGGesturePhase {
         }
     }
 }
+
