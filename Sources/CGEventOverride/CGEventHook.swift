@@ -98,7 +98,7 @@ public final class CGEventHook: CGEventHookType {
     }
 
     public func deactivate() {
-        guard let port = port else { return }
+        guard let port else { return }
         logger("Deactivate.")
         CFMachPortInvalidate(port)
         self.port = nil
@@ -108,7 +108,7 @@ public final class CGEventHook: CGEventHookType {
     }
 
     func releasePort() {
-        guard let port = port else { return }
+        guard let port else { return }
         logger("Released.")
         CFMachPortInvalidate(port)
         self.port = nil
@@ -132,8 +132,14 @@ public final class CGEventHook: CGEventHookType {
     @discardableResult
     public func activateIfPossible() -> Bool {
         assert(Thread.isMainThread, "Activate CGEventHook only on main thread!")
-        guard AXIsProcessTrusted() else { return false }
-        guard port == nil else { return true }
+        guard AXIsProcessTrusted() else {
+            logger("Permission denied.")
+            return false
+        }
+        guard port == nil else {
+            logger("Already listening to events.")
+            return true
+        }
 
         let eoi: UInt64
         if eventsOfInterest.contains(.all) {
