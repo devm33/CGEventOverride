@@ -132,10 +132,6 @@ public final class CGEventHook: CGEventHookType {
     @discardableResult
     public func activateIfPossible() -> Bool {
         assert(Thread.isMainThread, "Activate CGEventHook only on main thread!")
-        guard AXIsProcessTrusted() else {
-            logger("Permission denied.")
-            return false
-        }
         guard port == nil else {
             logger("Already listening to events.")
             return true
@@ -154,11 +150,6 @@ public final class CGEventHook: CGEventHookType {
             event: CGEvent,
             allManipulationsRawPointer: UnsafeMutableRawPointer?
         ) -> Unmanaged<CGEvent>? {
-            guard AXIsProcessTrusted() else {
-                postIsDisabled()
-                return .passRetained(event)
-            }
-
             if eventType == .tapDisabledByTimeout || eventType == .tapDisabledByUserInput {
                 postIsDisabled()
                 return .passRetained(event)
